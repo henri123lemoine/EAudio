@@ -1,7 +1,7 @@
 # EAudio
 This project has as goal to make simple the audio-listening of TTS for the EA Forum, Lesswrong, and the Alignment Forum.
 
-The non-linear library already does something like this, but only for a minority of posts on each site, and they don't let you download the files. This is a problem.
+The Nonlinear Library already does something like this for the EA Forum and for Lesswrong, but only for a minority of posts (the most upvoted ones) on each site, and they don't let you download the files. This is a problem.
 Moreover, even on the best podcast apps you have limited control over the listening experience; you have no say over which voice is reading for you, at precisely what speed, etc. This project is my attempt at solving those issues, and I intend to add functionalities over time.
 
 ## Example result 😍 A few clicks away..
