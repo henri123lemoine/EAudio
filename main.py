@@ -1,7 +1,7 @@
 from Helper.tts import tts
 from Helper.get_text import get_text
 
-url = "https://www.lesswrong.com/s/PKKsrXtuptWzaKCjr/p/gQY6LrTWJNkTv8YJR"
+url = "https://forum.effectivealtruism.org/posts/jk7A3NMdbxp65kcJJ/500-million-but-not-a-single-one-more"
 save_path_text = "Files"
 print_bool = False
 save_path_audio = "Files"
