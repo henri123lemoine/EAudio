@@ -1,5 +1,5 @@
 # EAudio
-This project has as goal to make simple the audio-listening of TTS for the EA Forum, Lesswrong, and the Alignment Forum.
+This project has as goal to make simple the audio-listening of TTS for the EA Forum, Lesswrong, the Alignment Forum, Gwern.net, ACX, and Arbital posts. A single URL from any of these sites should trigger the generation of audio.
 
 The Nonlinear Library already does something like this for the EA Forum and for Lesswrong, but only for a minority of posts (the most upvoted ones) on each site, and they don't let you download the files. This is a problem.
 Moreover, even on the best podcast apps you have limited control over the listening experience; you have no say over which voice is reading for you, at precisely what speed, etc. This project is my attempt at solving those issues, and I intend to add functionalities over time.
@@ -30,3 +30,13 @@ After having installed the required libraries and the repository itself:
 This project is only in its infancy. If there are bugs or issues, or if you have ideas for improvements, please tell me. 
 My main future plans are to make this work on a public easy-to-use website, and add some functionalities. 
 DM me @HenriLemoine13 if you want to help!
+
+## TODO
+(DONE) make it so that it reads the points and titles
+- add a live speed controller (separate sentences)
+- add a voice-changer thing
+- change tone of TTS for bold text and italic text
+
+Changes:
+- Make slightly better some parts of the tts. For example, have a bank/list of the accronyms that we want said as a word (aka MAIS) and accronyms that we want said as a series of letters (aka MLSS, said emelesess).
+- ~ in front of numbers should be replaced with "roughly"
