@@ -1,13 +1,13 @@
-from Helper.tts import tts
-from Helper.get_text import get_text
+from Helper.get_text import Text
+from Helper.get_audio import Audio
 
-url = "https://forum.effectivealtruism.org/posts/jk7A3NMdbxp65kcJJ/500-million-but-not-a-single-one-more"
-save_path_text = "Files"
-print_bool = False
-save_path_audio = "Files"
-play_audio = False
-voice = None
-speed = 300
 
-text = get_text(url, save_path=save_path_text, print_bool=print_bool)
-tts(text, save_path=save_path_audio, play_audio=play_audio, voice=voice, speed=speed)
+def main():
+    url = "https://www.lesswrong.com/posts/9fL22eBJMtyCLvL7j/soft-optimization-makes-the-value-target-bigger"
+    save_path = "data"
+    text = Text(url)
+    Audio(text, save_path, voice=1, speed=300)
+    print("Audio saved successfully")
+
+if __name__ == "__main__":
+    main()
