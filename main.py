@@ -3,7 +3,7 @@ from Helper.get_audio import Audio
 
 
 def main():
-    url = "https://www.lesswrong.com/posts/9fL22eBJMtyCLvL7j/soft-optimization-makes-the-value-target-bigger"
+    url = "https://astralcodexten.substack.com/p/even-more-bay-area-house-party"
     save_path = "data"
     text = Text(url)
     Audio(text, save_path, voice=1, speed=300)

@@ -8,7 +8,7 @@ Moreover, even on the best podcast apps you have limited control over the listen
 ![image](https://user-images.githubusercontent.com/42588535/208750191-bc200108-d85c-460e-aa6a-a1cb7cce248f.png)
 
 ## Features
-Save text file or TTS audio file for your favorite EAF/LW/AF/etc posts. Control voice speed and accent (using your Windows voices).
+Save text file or TTS audio file for your favorite EAF/LW/AF/Gwern/ACX/Arbital posts. Control voice speed and accent (using your Windows voices).
 
 ## Requirements
 You will need to install pyttsx3, requests, and beautifulsoup4 => pip install pyttsx3 requests beautifulsoup4
@@ -32,4 +32,4 @@ DM me @HenriLemoine13 if you want to help!
 - add a live speed controller (separate sentences)
 - change tone of TTS for bold text (louder) and italic text (slower)
 - for LW/EAF/AF, if the url to a sequence is given, the full sequence's audio should be downloaded in save_path
-- set up the text extraction for Arbital (this will be significantly harder than for other sites)
+- set up the text extraction for Arbital (IN-PROGRESS, PROBLEMS WITH CHROME AND SELENIUM; AS IT IS, IT WORKS SOMETIMES)
