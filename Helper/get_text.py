@@ -14,17 +14,21 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Text:
-    def __init__(self, url: str, max_attempts: int = 5):
+    def __init__(self, url: str, path=None, max_attempts: int=5):
         self.url = url
+        self.path = path
         self.max_attempts = max_attempts
-        self.parsed_link = urllib.parse.urlparse(url)
 
         self.title = None
         self.author = None
         self.date = None
         self.string = None
 
-        if self.parsed_link.netloc == 'www.lesswrong.com' or self.parsed_link.netloc == 'www.alignmentforum.org' or self.parsed_link.netloc == 'forum.effectivealtruism.org':
+        self.parsed_link = urllib.parse.urlparse(url)
+        
+        if path:
+            self.get_info_txt()
+        elif self.parsed_link.netloc == 'www.lesswrong.com' or self.parsed_link.netloc == 'www.alignmentforum.org' or self.parsed_link.netloc == 'forum.effectivealtruism.org':
             self.get_text_lw_eaf_af()
         elif self.parsed_link.netloc == 'www.gwern.net':
             self.get_info_gwern()
@@ -33,7 +37,8 @@ class Text:
         elif self.parsed_link.netloc == 'arbital.com':
             self.get_info_arbital()
         else:
-            raise ValueError(f'URL {url} is not yet supported.')
+            print(f'URL {url} is not yet supported. Using default technique, format might be off.')
+            self.get_info_default()
         
     def get_text_lw_eaf_af(self):
         if self.parsed_link.netloc == 'www.lesswrong.com':
@@ -54,6 +59,11 @@ class Text:
         self.tags = ", ".join([t.text for t in self.tags])
 
         self.body = self.soup.find("span", {"class": "commentOnSelection"})
+        
+        a_tags = self.body.find_all("a")
+        for element in a_tags:
+            element.replace_with(element.text)
+        
         self.body = markdownify.markdownify(str(self.body), heading_style='atx')
 
         if self.parsed_link.netloc == 'www.lesswrong.com':
@@ -81,14 +91,21 @@ class Text:
         self.date = f"Written from {start_month} {start_date.day}, {start_date.year}, to {end_month} {end_date.day}, {end_date.year}."
 
         self.body = self.soup.find("div", {"id": "markdownBody", "class": "markdownBody"})
-
+        
+        to_delete = self.body.find_all(id=['see-also', 'external-links', 'appendix', 'appendices', 'footnotes', 'backlinks-section', 'link-bibliography-section', 'similars-section']) + self.body.find_all('noscript')
+        for element in to_delete:
+            element.decompose()
+        
         bold_elements = self.body.find_all(['b', 'strong'])
         italic_elements = self.body.find_all(['i', 'em'])
         sup_tags = self.body.find_all('sup')
         blockquotes = self.body.find_all('blockquote')
+        a_tags = self.body.find_all('a')
 
-        to_delete = self.body.find_all(id=['see-also', 'external-links', 'appendix', 'appendices', 'footnotes', 'backlinks-section', 'link-bibliography-section', 'similars-section']) + self.body.find_all('noscript')
+        
 
+        for element in a_tags:
+            element.replace_with(element.text)
         for element in bold_elements:
             element.replace_with('**' + element.text + '**')
         for element in italic_elements:
@@ -100,12 +117,14 @@ class Text:
                 element.replace_with('Abstract' + element.text)
                 continue
             element.replace_with('Quote.' + element.text + 'Unquote.')
-        for element in to_delete:
-            element.decompose()
+        
+        
+        self.markdown = markdownify.markdownify(str(self.body), heading_style='atx')
+        self.markdown = self.markdown.replace('*', '').replace('#', '')
             
         self.outro = f"""This was '{self.title}' by {self.author}. Thank you for listening."""
 
-        self.string = f"<speak>{self.title}, by {self.author}.\n---\n{self.date}\n---\n{self.body}\n---\n{self.outro}</speak>"
+        self.string = f"<speak>{self.title}, by {self.author}.\n---\n{self.date}\n---\n{self.markdown}\n---\n{self.outro}</speak>"
 
     def get_info_substack(self):
         self.page = requests.get(self.url).text
@@ -130,8 +149,12 @@ class Text:
             element.replace_with(f"Quote.\n{quote_text}\nUnquote.\n")
         img_tags = self.body.find_all("div", {"class": "captioned-image-container"})
         for element in img_tags:
-            caption = element.find("figcaption").text
-            element.replace_with(f"Image caption: {caption}\n")
+            caption = element.find("figcaption")
+            if caption:
+                caption = caption.text
+                element.replace_with(f"Image caption: {caption}\n")
+            else:
+                element.replace_with("Image.\n")
         self.markdown = markdownify.markdownify(str(self.body), heading_style='atx')
 
         self.markdown = self.markdown.replace('*', '').replace('#', '')
@@ -186,6 +209,34 @@ class Text:
 
         self.string = f"<speak>\n{self.markdown}\n{outro}\n</speak>"
 
+    def get_info_txt(self):
+        self.title = self.path.split('/')[-1].split('.')[0]
+        with open(self.path, 'r', encoding='utf-8') as f:
+            self.string = f.read()
+    
+    def get_info_default(self):
+        self.page = requests.get(self.url).text
+        self.soup = BeautifulSoup(self.page, 'html.parser')
+        
+        try:
+            self.soup = self.soup.find("body")
+        except:
+            pass
+        
+        a_tags = self.soup.find_all('a')
+        for element in a_tags:
+            element.replace_with(element.text)
+        
+        self.markdown = markdownify.markdownify(str(self.soup), heading_style='atx')
+        self.markdown = self.markdown.replace('*', '').replace('#', '')
+        
+        try:
+            self.title = self.soup.title.string
+        except:
+            self.title = "Untitled"
+        
+        self.string = f"<speak>\n{self.title}.\n{self.markdown}\n</speak>"
+        
     def __str__(self):
         return self.string
 
@@ -199,13 +250,17 @@ if __name__ == "__main__":
         "https://www.alignmentforum.org/posts/JSkqkgYcyYt8oHsFi/large-language-models-can-provide-normative-assumptions-for", # Alignment Forum
         "https://www.gwern.net/Melatonin", # Gwern
         "https://astralcodexten.substack.com/p/sorry-i-still-think-i-am-right-about", # Substack
-        "https://arbital.com/p/bayes_rule", # Arbital (not supported yet)
+        #"https://arbital.com/p/bayes_rule", # Arbital (doesn't work)
+        "https://en.wikipedia.org/wiki/Intuitionistic_logic", # Wikipedia (doesn't work)
+        "https://www.reddit.com/r/rational/comments/101em0c/d_monday_request_and_recommendation_thread/", # Reddit (doesn't work)
     ]
 
     full_text = ""
     for url in urls_to_test:
+        print(f"Getting text for {url}")
         text = Text(url)
         full_text += str(text) + "\n"*15
+        print(f"Added text for {url}")
     
     with open("test.txt", "w", encoding="utf-8") as f:
         f.write(full_text)
